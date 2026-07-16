@@ -198,11 +198,47 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 /* ==========================================================================
    AVIS
    ========================================================================== */
-.reviews-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
-@media (min-width: 700px) { .reviews-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1024px) { .reviews-grid { grid-template-columns: repeat(3, 1fr); } }
-.review-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 1.6rem; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: .9rem; transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
-.review-card.reveal:hover, .review-card.reveal:active { transform: translateY(-6px); border-color: var(--brand); box-shadow: 0 16px 34px rgba(18,21,28,.12); }
+/* ---- Carrousel d'avis : défilement continu, pause au survol ---- */
+.reviews-carousel {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.reviews-track { display: flex; gap: 1.25rem; width: max-content; }
+@media (prefers-reduced-motion: no-preference) {
+  .reviews-track { animation: reviews-scroll 34s linear infinite; }
+  .reviews-track:hover { animation-play-state: paused; }
+}
+@keyframes reviews-scroll { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+.review-card {
+  position: relative;
+  overflow: hidden;
+  width: min(340px, 82vw);
+  flex-shrink: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1.6rem;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: .9rem;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.review-card:hover, .review-card:active { transform: translateY(-6px); border-color: var(--brand); box-shadow: 0 16px 34px rgba(18,21,28,.12); }
+/* Reflet rouge discret qui suit le curseur, seule couleur = celle de la DA */
+.review-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(160px 160px at var(--mx, 50%) var(--my, 50%), rgba(210,18,46,.12), transparent 70%);
+  opacity: 0;
+  transition: opacity .25s ease;
+  pointer-events: none;
+}
+.review-card:hover::after { opacity: 1; }
 .review-card__stars { color: var(--action); font-size: .9rem; letter-spacing: .1em; }
 .review-card__text { font-size: .95rem; color: var(--ink); }
 .review-card__meta { display: flex; align-items: center; gap: .7rem; margin-top: auto; }
@@ -232,7 +268,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 .pricing-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
 @media (min-width: 900px) { .pricing-grid { grid-template-columns: repeat(3, 1fr); } }
 .price-card { position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 2rem 1.7rem; box-shadow: var(--shadow-card); display: flex; flex-direction: column; transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
-.price-card--featured { border: 2px solid var(--action); box-shadow: 0 14px 34px rgba(255,106,61,.18); }
+.price-card--featured { border: 2px solid var(--action); box-shadow: 0 14px 34px rgba(210,18,46,.18); }
 /* Le cadre "bouge" au survol : légère élévation + bordure qui s'intensifie, sans nouvelle couleur */
 .price-card.reveal:hover, .price-card.reveal:active { transform: translateY(-6px); border-color: var(--brand); box-shadow: 0 16px 34px rgba(18,21,28,.12); }
 .price-card--featured.reveal:hover, .price-card--featured.reveal:active { border-color: var(--action-dark); box-shadow: 0 18px 38px rgba(255,106,61,.28); }
@@ -497,22 +533,40 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
         <h2 class="section-title" id="avis-title">Ce que disent nos élèves</h2>
         <p class="section-lede" style="margin-inline:auto">Des avis authentiques laissés sur notre fiche Google. <strong>Contenu d'exemple — à remplacer par les vrais avis du client.</strong></p>
       </div>
-      <div class="reviews-grid">
-        <article class="review-card reveal">
-          <div class="review-card__stars" aria-hidden="true">★★★★★</div>
-          <p class="review-card__text">« Moniteur patient et pédagogue, planning facile à organiser. Permis obtenu du premier coup. »</p>
-          <div class="review-card__meta"><span class="review-avatar">L</span><div><div class="review-card__name">Léa M.</div><div class="review-card__date">Juin 2026</div></div></div>
-        </article>
-        <article class="review-card reveal">
-          <div class="review-card__stars" aria-hidden="true">★★★★★</div>
-          <p class="review-card__text">« Le dossier CPF a été géré du début à la fin par l'équipe. Très bon accompagnement. »</p>
-          <div class="review-card__meta"><span class="review-avatar">K</span><div><div class="review-card__name">Karim B.</div><div class="review-card__date">Mai 2026</div></div></div>
-        </article>
-        <article class="review-card reveal">
-          <div class="review-card__stars" aria-hidden="true">★★★★☆</div>
-          <p class="review-card__text">« Bon rapport qualité-prix, équipe réactive. Un peu d'attente en haute saison pour les créneaux du soir. »</p>
-          <div class="review-card__meta"><span class="review-avatar">S</span><div><div class="review-card__name">Sophie R.</div><div class="review-card__date">Avril 2026</div></div></div>
-        </article>
+      <div class="reviews-carousel">
+        <div class="reviews-track" id="reviews-track">
+          <article class="review-card">
+            <div class="review-card__stars" aria-hidden="true">★★★★★</div>
+            <p class="review-card__text">« Moniteur patient et pédagogue, planning facile à organiser. Permis obtenu du premier coup. »</p>
+            <div class="review-card__meta"><span class="review-avatar">L</span><div><div class="review-card__name">Léa M.</div><div class="review-card__date">Juin 2026</div></div></div>
+          </article>
+          <article class="review-card">
+            <div class="review-card__stars" aria-hidden="true">★★★★★</div>
+            <p class="review-card__text">« Le dossier CPF a été géré du début à la fin par l'équipe. Très bon accompagnement. »</p>
+            <div class="review-card__meta"><span class="review-avatar">K</span><div><div class="review-card__name">Karim B.</div><div class="review-card__date">Mai 2026</div></div></div>
+          </article>
+          <article class="review-card">
+            <div class="review-card__stars" aria-hidden="true">★★★★☆</div>
+            <p class="review-card__text">« Bon rapport qualité-prix, équipe réactive. Un peu d'attente en haute saison pour les créneaux du soir. »</p>
+            <div class="review-card__meta"><span class="review-avatar">S</span><div><div class="review-card__name">Sophie R.</div><div class="review-card__date">Avril 2026</div></div></div>
+          </article>
+          <!-- Copie dupliquée (masquée aux lecteurs d'écran) pour une boucle de défilement sans saut visible -->
+          <article class="review-card" aria-hidden="true">
+            <div class="review-card__stars" aria-hidden="true">★★★★★</div>
+            <p class="review-card__text">« Moniteur patient et pédagogue, planning facile à organiser. Permis obtenu du premier coup. »</p>
+            <div class="review-card__meta"><span class="review-avatar">L</span><div><div class="review-card__name">Léa M.</div><div class="review-card__date">Juin 2026</div></div></div>
+          </article>
+          <article class="review-card" aria-hidden="true">
+            <div class="review-card__stars" aria-hidden="true">★★★★★</div>
+            <p class="review-card__text">« Le dossier CPF a été géré du début à la fin par l'équipe. Très bon accompagnement. »</p>
+            <div class="review-card__meta"><span class="review-avatar">K</span><div><div class="review-card__name">Karim B.</div><div class="review-card__date">Mai 2026</div></div></div>
+          </article>
+          <article class="review-card" aria-hidden="true">
+            <div class="review-card__stars" aria-hidden="true">★★★★☆</div>
+            <p class="review-card__text">« Bon rapport qualité-prix, équipe réactive. Un peu d'attente en haute saison pour les créneaux du soir. »</p>
+            <div class="review-card__meta"><span class="review-avatar">S</span><div><div class="review-card__name">Sophie R.</div><div class="review-card__date">Avril 2026</div></div></div>
+          </article>
+        </div>
       </div>
       <p class="reviews-more"><!-- CLIENT: lien réel vers la fiche Google Business --><a href="#" target="_blank" rel="noopener">Voir tous les avis sur Google →</a></p>
     </div>
@@ -949,6 +1003,15 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'Intersect
 } else {
   document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-visible'); });
 }
+
+/* ---- Reflet rouge des cartes avis : suit le curseur au survol ---- */
+document.querySelectorAll('.review-card').forEach(function (card) {
+  card.addEventListener('pointermove', function (e) {
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+    card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+  });
+});
 
 const contactForm = document.getElementById('contact-form');
 const formWrap = document.getElementById('contact-form-wrap');
